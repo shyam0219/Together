@@ -1,0 +1,12 @@
+/app/backend/CommunityOS.Domain/bin/Release/net8.0/CommunityOS.Domain.deps.json
+/app/backend/CommunityOS.Domain/bin/Release/net8.0/CommunityOS.Domain.dll
+/app/backend/CommunityOS.Domain/bin/Release/net8.0/CommunityOS.Domain.pdb
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/CommunityOS.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/CommunityOS.Domain.AssemblyInfoInputs.cache
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/CommunityOS.Domain.AssemblyInfo.cs
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/CommunityOS.Domain.csproj.CoreCompileInputs.cache
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/CommunityOS.Domain.sourcelink.json
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/CommunityOS.Domain.dll
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/refint/CommunityOS.Domain.dll
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/CommunityOS.Domain.pdb
+/app/backend/CommunityOS.Domain/obj/Release/net8.0/ref/CommunityOS.Domain.dll
