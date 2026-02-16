@@ -1,2 +1,5 @@
 <Solution>
+  <Project Path="CommunityOS.Api/CommunityOS.Api.csproj" />
+  <Project Path="CommunityOS.Domain/CommunityOS.Domain.csproj" />
+  <Project Path="CommunityOS.Infrastructure/CommunityOS.Infrastructure.csproj" />
 </Solution>
