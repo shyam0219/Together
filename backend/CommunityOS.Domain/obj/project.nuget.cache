@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Bcrmv6nBaZ4=",
+  "dgSpecHash": "FCT4/8GQ0LQ=",
   "success": true,
   "projectFilePath": "/app/backend/CommunityOS.Domain/CommunityOS.Domain.csproj",
-  "expectedPackageFiles": [
-    "/root/.nuget/packages/microsoft.netcore.app.ref/8.0.24/microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
-    "/root/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.24/microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

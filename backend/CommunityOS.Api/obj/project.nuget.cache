@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "VHBC297OLBo=",
+  "dgSpecHash": "mrKVBHGncxU=",
   "success": true,
   "projectFilePath": "/app/backend/CommunityOS.Api/CommunityOS.Api.csproj",
   "expectedPackageFiles": [
@@ -64,10 +64,7 @@
     "/root/.nuget/packages/system.text.encodings.web/6.0.1/system.text.encodings.web.6.0.1.nupkg.sha512",
     "/root/.nuget/packages/system.text.json/4.7.2/system.text.json.4.7.2.nupkg.sha512",
     "/root/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "/root/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512",
-    "/root/.nuget/packages/microsoft.netcore.app.ref/8.0.24/microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
-    "/root/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.24/microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512",
-    "/root/.nuget/packages/microsoft.netcore.app.host.linux-arm64/8.0.24/microsoft.netcore.app.host.linux-arm64.8.0.24.nupkg.sha512"
+    "/root/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512"
   ],
   "logs": []
 }
