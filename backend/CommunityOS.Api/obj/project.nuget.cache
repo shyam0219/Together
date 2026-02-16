@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "5B1mi6v+XtU=",
-  "success": false,
+  "dgSpecHash": "VHBC297OLBo=",
+  "success": true,
   "projectFilePath": "/app/backend/CommunityOS.Api/CommunityOS.Api.csproj",
   "expectedPackageFiles": [
     "/root/.nuget/packages/azure.core/1.38.0/azure.core.1.38.0.nupkg.sha512",
@@ -69,17 +69,5 @@
     "/root/.nuget/packages/microsoft.aspnetcore.app.ref/8.0.24/microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512",
     "/root/.nuget/packages/microsoft.netcore.app.host.linux-arm64/8.0.24/microsoft.netcore.app.host.linux-arm64.8.0.24.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1102",
-      "level": "Error",
-      "message": "Unable to find package Microsoft.AspNetCore.RateLimiting with version (>= 8.0.24)\n  - Found 6 version(s) in nuget.org [ Nearest version: 7.0.0-rc.2.22476.2 ]",
-      "projectPath": "/app/backend/CommunityOS.Api/CommunityOS.Api.csproj",
-      "filePath": "/app/backend/CommunityOS.Api/CommunityOS.Api.csproj",
-      "libraryId": "Microsoft.AspNetCore.RateLimiting",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  "logs": []
 }

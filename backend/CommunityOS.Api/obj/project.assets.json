@@ -2887,8 +2887,7 @@
       "CommunityOS.Domain >= 1.0.0",
       "CommunityOS.Infrastructure >= 1.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.24",
-      "Microsoft.AspNetCore.OpenApi >= 8.0.24",
-      "Microsoft.AspNetCore.RateLimiting >= 8.0.24"
+      "Microsoft.AspNetCore.OpenApi >= 8.0.24"
     ]
   },
   "packageFolders": {
@@ -2948,10 +2947,6 @@
           "Microsoft.AspNetCore.OpenApi": {
             "target": "Package",
             "version": "[8.0.24, )"
-          },
-          "Microsoft.AspNetCore.RateLimiting": {
-            "target": "Package",
-            "version": "[8.0.24, )"
           }
         },
         "imports": [
@@ -2990,16 +2985,5 @@
         "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.103/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1102",
-      "level": "Error",
-      "message": "Unable to find package Microsoft.AspNetCore.RateLimiting with version (>= 8.0.24)\n  - Found 6 version(s) in nuget.org [ Nearest version: 7.0.0-rc.2.22476.2 ]",
-      "libraryId": "Microsoft.AspNetCore.RateLimiting",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  }
 }
