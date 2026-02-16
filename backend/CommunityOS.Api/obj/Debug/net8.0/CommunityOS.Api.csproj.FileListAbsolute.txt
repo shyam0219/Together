@@ -1,0 +1,9 @@
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/CommunityOS.Api.csproj.AssemblyReference.cache
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/rpswa.dswa.cache.json
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/CommunityOS.Api.GeneratedMSBuildEditorConfig.editorconfig
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/CommunityOS.Api.AssemblyInfoInputs.cache
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/CommunityOS.Api.AssemblyInfo.cs
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/CommunityOS.Api.csproj.CoreCompileInputs.cache
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/CommunityOS.Api.MvcApplicationPartsAssemblyInfo.cs
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/CommunityOS.Api.MvcApplicationPartsAssemblyInfo.cache
+/app/backend/CommunityOS.Api/obj/Debug/net8.0/CommunityOS.Api.sourcelink.json
