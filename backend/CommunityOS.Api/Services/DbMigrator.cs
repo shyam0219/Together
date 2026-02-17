@@ -13,11 +13,13 @@ public static class DbMigrator
         var services = scope.ServiceProvider;
         var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("DbMigrator");
 
-        // Replace ITenantContext for this scope only.
         var tenantProvider = services.GetRequiredService<ITenantProvider>();
-        tenantProvider.Clear();
 
-        // Create DbContext
+        // Ensure tenant context is always set (query filters reference CurrentTenantId even when PlatformOwner).
+        var seTenantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var itTenantId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+        tenantProvider.Set(seTenantId, isPlatformOwner: true);
+
         var db = services.GetRequiredService<AppDbContext>();
 
         logger.LogInformation("Applying EF Core migrations...");
