@@ -5,7 +5,6 @@
 /app/backend/CommunityOS.Domain/obj/Debug/net8.0/CommunityOS.Domain.AssemblyInfoInputs.cache
 /app/backend/CommunityOS.Domain/obj/Debug/net8.0/CommunityOS.Domain.AssemblyInfo.cs
 /app/backend/CommunityOS.Domain/obj/Debug/net8.0/CommunityOS.Domain.csproj.CoreCompileInputs.cache
-/app/backend/CommunityOS.Domain/obj/Debug/net8.0/CommunityOS.Domain.sourcelink.json
 /app/backend/CommunityOS.Domain/obj/Debug/net8.0/CommunityOS.Domain.dll
 /app/backend/CommunityOS.Domain/obj/Debug/net8.0/refint/CommunityOS.Domain.dll
 /app/backend/CommunityOS.Domain/obj/Debug/net8.0/CommunityOS.Domain.pdb

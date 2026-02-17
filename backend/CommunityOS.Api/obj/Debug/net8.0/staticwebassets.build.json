@@ -1,1 +1,11 @@
-{"Version":1,"Hash":"bVeCazSqd3IjgDsuB4e/9taANULnZ8sP7bNBkpXkDpg=","Source":"CommunityOS.Api","BasePath":"/","Mode":"Root","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
+{
+  "Version": 1,
+  "Hash": "9gSZ/PMVK94pAEwU6+dTR+OfXtHF+vj0cCZiCNkz4U0=",
+  "Source": "CommunityOS.Api",
+  "BasePath": "_content/CommunityOS.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

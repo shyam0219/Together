@@ -9,7 +9,6 @@
 /app/backend/CommunityOS.Infrastructure/obj/Debug/net8.0/CommunityOS.Infrastructure.AssemblyInfoInputs.cache
 /app/backend/CommunityOS.Infrastructure/obj/Debug/net8.0/CommunityOS.Infrastructure.AssemblyInfo.cs
 /app/backend/CommunityOS.Infrastructure/obj/Debug/net8.0/CommunityOS.Infrastructure.csproj.CoreCompileInputs.cache
-/app/backend/CommunityOS.Infrastructure/obj/Debug/net8.0/CommunityOS.Infrastructure.sourcelink.json
 /app/backend/CommunityOS.Infrastructure/obj/Debug/net8.0/Communit.F7C34972.Up2Date
 /app/backend/CommunityOS.Infrastructure/obj/Debug/net8.0/CommunityOS.Infrastructure.dll
 /app/backend/CommunityOS.Infrastructure/obj/Debug/net8.0/refint/CommunityOS.Infrastructure.dll
