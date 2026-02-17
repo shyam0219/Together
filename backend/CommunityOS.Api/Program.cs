@@ -22,6 +22,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (!string.IsNullOrWhiteSpace(sqlServerConnStr) && DbProviderSelector.CanConnectToSqlServer(sqlServerConnStr))
     {
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
         options.UseSqlServer(sqlServerConnStr);
     }
     else
