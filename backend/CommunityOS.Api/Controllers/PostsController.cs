@@ -62,6 +62,13 @@ public sealed class PostsController : ControllerBase
 
         var postIds = posts.Select(p => p.PostId).ToList();
 
+        var commentCounts = await db.Comments
+            .AsNoTracking()
+            .Where(c => postIds.Contains(c.PostId))
+            .GroupBy(c => c.PostId)
+            .Select(g => new { PostId = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+
         var likeCounts = await db.Reactions
             .AsNoTracking()
             .Where(r => postIds.Contains(r.PostId) && r.Type == ReactionType.Like)
