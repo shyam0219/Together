@@ -22,6 +22,7 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password, tenantCode }),
       });
       localStorage.setItem('communityos_jwt', data.token);
+      window.dispatchEvent(new Event('communityos:auth-changed'));
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
