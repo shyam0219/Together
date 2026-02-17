@@ -223,6 +223,7 @@ public sealed class PostsController : ControllerBase
 
         var author = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == p.AuthorId, ct);
         var likeCount = await db.Reactions.AsNoTracking().CountAsync(r => r.PostId == p.PostId && r.Type == ReactionType.Like, ct);
+        var commentCount = await db.Comments.AsNoTracking().CountAsync(c => c.PostId == p.PostId, ct);
         var likedByMe = await db.Reactions.AsNoTracking().AnyAsync(r => r.PostId == p.PostId && r.UserId == me && r.Type == ReactionType.Like, ct);
         var bookmarkedByMe = await db.Bookmarks.AsNoTracking().AnyAsync(b => b.PostId == p.PostId && b.UserId == me, ct);
 
