@@ -26,9 +26,6 @@ public static class DbMigrator
         await db.Database.MigrateAsync(ct);
 
         // Seed tenants
-        var seTenantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-        var itTenantId = Guid.Parse("22222222-2222-2222-2222-222222222222");
-
         if (!await db.Tenants.AnyAsync(ct))
         {
             logger.LogInformation("Seeding tenants...");
