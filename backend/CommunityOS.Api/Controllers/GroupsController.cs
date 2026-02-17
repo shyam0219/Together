@@ -102,6 +102,110 @@ public sealed class GroupsController : ControllerBase
         return Ok(new GroupDto(g.GroupId, g.Name, g.Description, g.Visibility.ToString(), g.CreatedById, g.CreatedAt, memberCount, isMember));
     }
 
+
+    [HttpGet("{id:guid}/posts")]
+    [Authorize]
+    public async Task<ActionResult<PageResponse<PostDto>>> Posts(
+        [FromRoute] Guid id,
+        [FromServices] AppDbContext db,
+        CancellationToken ct,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        var me = UserContext.GetRequiredUserId(User);
+
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize is < 1 ? 20 : pageSize;
+        pageSize = Math.Min(pageSize, 50);
+
+        var g = await db.Groups.AsNoTracking().FirstOrDefaultAsync(x => x.GroupId == id, ct);
+        if (g is null) return NotFound(new { error = "not_found" });
+
+        if (g.Visibility == GroupVisibility.Private)
+        {
+            var isMember = await db.GroupMembers.AsNoTracking().AnyAsync(m => m.GroupId == id && m.UserId == me, ct);
+            if (!isMember) return NotFound(new { error = "not_found" });
+        }
+
+        // Get group posts mapping
+        var mappings = await db.GroupPosts.AsNoTracking()
+            .Where(gp => gp.GroupId == id)
+            .Take(5000)
+            .ToListAsync(ct);
+
+        var postIds = mappings.Select(m => m.PostId).Distinct().ToList();
+        if (postIds.Count == 0)
+            return Ok(new PageResponse<PostDto>(new List<PostDto>(), page, pageSize, false));
+
+        var allPosts = await db.Posts.AsNoTracking()
+            .Include(p => p.Images)
+            .Where(p => postIds.Contains(p.PostId))
+            .Take(5000)
+            .ToListAsync(ct);
+
+        allPosts = allPosts.OrderByDescending(p => p.CreatedAt).ToList();
+
+        var skip = (page - 1) * pageSize;
+        var pageItems = allPosts.Skip(skip).Take(pageSize).ToList();
+        var hasMore = allPosts.Count > skip + pageSize;
+
+        var pagePostIds = pageItems.Select(p => p.PostId).ToList();
+
+        var likeCounts = await db.Reactions.AsNoTracking()
+            .Where(r => pagePostIds.Contains(r.PostId) && r.Type == ReactionType.Like)
+            .GroupBy(r => r.PostId)
+            .Select(g2 => new { PostId = g2.Key, Count = g2.Count() })
+            .ToListAsync(ct);
+        var likeCountMap = likeCounts.ToDictionary(x => x.PostId, x => x.Count);
+
+        var commentCounts = await db.Comments.AsNoTracking()
+            .Where(c => pagePostIds.Contains(c.PostId))
+            .GroupBy(c => c.PostId)
+            .Select(g2 => new { PostId = g2.Key, Count = g2.Count() })
+            .ToListAsync(ct);
+        var commentCountMap = commentCounts.ToDictionary(x => x.PostId, x => x.Count);
+
+        var myLikes = await db.Reactions.AsNoTracking()
+            .Where(r => pagePostIds.Contains(r.PostId) && r.UserId == me && r.Type == ReactionType.Like)
+            .Select(r => r.PostId)
+            .ToListAsync(ct);
+        var myLikeSet = myLikes.ToHashSet();
+
+        var myBookmarks = await db.Bookmarks.AsNoTracking()
+            .Where(b => pagePostIds.Contains(b.PostId) && b.UserId == me)
+            .Select(b => b.PostId)
+            .ToListAsync(ct);
+        var myBookmarkSet = myBookmarks.ToHashSet();
+
+        var authorIds = pageItems.Select(p => p.AuthorId).Distinct().ToList();
+        var authors = await db.Users.AsNoTracking()
+            .Where(u => authorIds.Contains(u.UserId))
+            .Select(u => new { u.UserId, Name = u.FirstName + " " + u.LastName })
+            .ToListAsync(ct);
+        var authorMap = authors.ToDictionary(a => a.UserId, a => a.Name);
+
+        var dtos = pageItems.Select(p => new PostDto(
+            p.PostId,
+            p.AuthorId,
+            authorMap.TryGetValue(p.AuthorId, out var name) ? name : "Unknown",
+            p.BodyText,
+            p.LinkUrl,
+            p.LinkTitle,
+            p.LinkDescription,
+            p.LinkImageUrl,
+            p.CommentingEnabled,
+            p.Status.ToString(),
+            p.CreatedAt,
+            p.Images.OrderBy(i => i.SortOrder).Select(PostDtoMapper.ToDto).ToList(),
+            likeCountMap.TryGetValue(p.PostId, out var lc) ? lc : 0,
+            commentCountMap.TryGetValue(p.PostId, out var cc) ? cc : 0,
+            myLikeSet.Contains(p.PostId),
+            myBookmarkSet.Contains(p.PostId)
+        )).ToList();
+
+        return Ok(new PageResponse<PostDto>(dtos, page, pageSize, hasMore));
+    }
+
     [HttpPost("{id:guid}/join")]
     [Authorize]
     public async Task<ActionResult> Join([FromRoute] Guid id, [FromServices] AppDbContext db, CancellationToken ct)
