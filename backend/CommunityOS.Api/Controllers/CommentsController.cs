@@ -20,6 +20,7 @@ public sealed class CommentsController : ControllerBase
         [FromBody] CreateCommentRequest req,
         [FromServices] AppDbContext db,
         [FromServices] IRateLimitService rateLimiter,
+        [FromServices] ITenantProvider tenantProvider,
         [FromServices] INotificationService notifications,
         CancellationToken ct)
     {
