@@ -22,10 +22,10 @@ public sealed class ModerationController : ControllerBase
     [HttpGet("reports")]
     [Authorize]
     public async Task<ActionResult<PageResponse<ReportDto>>> Reports(
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 50,
         [FromServices] AppDbContext db,
-        CancellationToken ct = default)
+        CancellationToken ct,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50)
     {
         var role = UserContext.GetRole(User);
         if (!IsModOrAdmin(role)) return Forbid();
