@@ -17,11 +17,11 @@ public sealed class PostsController : ControllerBase
     [HttpGet]
     [Authorize]
     public async Task<ActionResult<PageResponse<PostDto>>> List(
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 20,
         [FromServices] AppDbContext db,
         [FromServices] ITenantProvider tenantProvider,
-        CancellationToken ct = default)
+        CancellationToken ct,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
         var me = UserContext.GetRequiredUserId(User);
         var tenantId = tenantProvider.CurrentTenantId;
