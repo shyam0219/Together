@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CommunityOS.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b231584a983383bfe84aaa4ad45a96dc6ec3e658")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4ff62c4aeaba6ab165db59fd4ee0d06c5c7fee21")]
 [assembly: System.Reflection.AssemblyProductAttribute("CommunityOS.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CommunityOS.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
