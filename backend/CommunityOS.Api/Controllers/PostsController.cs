@@ -117,7 +117,7 @@ public sealed class PostsController : ControllerBase
             myBookmarkSet.Contains(p.PostId)
         )).ToList();
 
-        return Ok(dtos);
+        return Ok(new PageResponse<PostDto>(dtos, page, pageSize, hasMore));
     }
 
     [HttpPost]
