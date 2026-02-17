@@ -132,7 +132,7 @@ public sealed class PostsController : ControllerBase
     {
         var me = UserContext.GetRequiredUserId(User);
 
-        if (!rateLimiter.TryConsume(me, "create_post", PostRateWindow, out var retryAfter))
+        if (!rateLimiter.TryConsume(tenantProvider.CurrentTenantId, me, "create_post", PostRateWindow, out var retryAfter))
             return StatusCode(429, new { error = "rate_limited", retryAfterSeconds = (int)Math.Ceiling(retryAfter.TotalSeconds) });
 
         if (string.IsNullOrWhiteSpace(req.BodyText))
