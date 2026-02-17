@@ -4,7 +4,7 @@ namespace CommunityOS.Api.Services;
 
 public interface IRateLimitService
 {
-    bool TryConsume(Guid userId, string actionKey, TimeSpan window, out TimeSpan retryAfter);
+    bool TryConsume(Guid tenantId, Guid userId, string actionKey, TimeSpan window, out TimeSpan retryAfter);
 }
 
 /// <summary>
