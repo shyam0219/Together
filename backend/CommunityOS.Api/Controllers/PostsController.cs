@@ -143,6 +143,20 @@ public sealed class PostsController : ControllerBase
         if (urls.Count is < 0 or > 10)
             return BadRequest(new { error = "invalid_image_count" });
 
+        // Optional group association (for privacy enforcement)
+        Group? group = null;
+        if (req.GroupId.HasValue)
+        {
+            group = await db.Groups.FirstOrDefaultAsync(g => g.GroupId == req.GroupId.Value, ct);
+            if (group is null) return BadRequest(new { error = "invalid_group" });
+
+            if (group.Visibility == GroupVisibility.Private)
+            {
+                var isMember = await db.GroupMembers.AsNoTracking().AnyAsync(m => m.GroupId == group.GroupId && m.UserId == me, ct);
+                if (!isMember) return Forbid();
+            }
+        }
+
         var post = new Post
         {
             PostId = Guid.NewGuid(),
@@ -166,6 +180,17 @@ public sealed class PostsController : ControllerBase
 
         db.Posts.Add(post);
         await db.SaveChangesAsync(ct);
+
+        if (group is not null)
+        {
+            db.GroupPosts.Add(new GroupPost
+            {
+                GroupPostId = Guid.NewGuid(),
+                GroupId = group.GroupId,
+                PostId = post.PostId
+            });
+            await db.SaveChangesAsync(ct);
+        }
 
         // Mentions -> notifications (within tenant due to filters)
         var usernames = MentionParser.ExtractMentions(post.BodyText);

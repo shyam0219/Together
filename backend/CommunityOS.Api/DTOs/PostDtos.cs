@@ -29,7 +29,8 @@ public sealed record CreatePostRequest(
     string? LinkUrl,
     string? LinkTitle,
     string? LinkDescription,
-    string? LinkImageUrl
+    string? LinkImageUrl,
+    Guid? GroupId
 );
 
 public sealed record UpdatePostRequest(
