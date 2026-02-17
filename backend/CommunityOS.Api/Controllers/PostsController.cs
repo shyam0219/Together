@@ -50,7 +50,7 @@ public sealed class PostsController : ControllerBase
             return links.Any(l => l.Group.Visibility == GroupVisibility.Public || myGroupSet.Contains(l.GroupId));
         }
 
-        var basePostsQuery = db.Posts.AsNoTracking().Include(p => p.Images).Take(1000);
+        var basePostsQuery = db.Posts.AsNoTracking().Include(p => p.Images).Take(5000);
         var allPosts = await basePostsQuery.ToListAsync(ct);
         var visiblePosts = allPosts.Where(IsVisible).OrderByDescending(p => p.CreatedAt).ToList();
 
@@ -68,6 +68,8 @@ public sealed class PostsController : ControllerBase
             .GroupBy(c => c.PostId)
             .Select(g => new { PostId = g.Key, Count = g.Count() })
             .ToListAsync(ct);
+
+        // NOTE: SQLite fallback will count comments across all (including replies) which is acceptable for MVP.
 
         var likeCounts = await db.Reactions
             .AsNoTracking()
