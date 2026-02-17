@@ -15,9 +15,9 @@ public sealed class TenantMiddleware
 
     public async Task InvokeAsync(HttpContext context, ITenantProvider tenantProvider)
     {
-        // Allow health checks without auth.
+        // Allow unauthenticated endpoints
         var path = context.Request.Path.Value ?? string.Empty;
-        if (path == "/" || path.StartsWith("/api/health"))
+        if (path == "/" || path.StartsWith("/api/health") || path.StartsWith("/api/v1/auth"))
         {
             await _next(context);
             return;
