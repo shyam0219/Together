@@ -8,5 +8,9 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
     strictPort: true,
+    allowedHosts: [
+      'multitenancy-hub-6.cluster-5.preview.emergentcf.cloud',
+      'a5cb11c4-25c4-4152-bdee-d63d058e43a2.preview.emergentagent.com',
+    ],
   },
 })
