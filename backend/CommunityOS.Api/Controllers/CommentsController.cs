@@ -25,7 +25,7 @@ public sealed class CommentsController : ControllerBase
     {
         var me = UserContext.GetRequiredUserId(User);
 
-        if (!rateLimiter.TryConsume(me, "create_comment", CommentRateWindow, out var retryAfter))
+        if (!rateLimiter.TryConsume(tenantProvider.CurrentTenantId, me, "create_comment", CommentRateWindow, out var retryAfter))
             return StatusCode(429, new { error = "rate_limited", retryAfterSeconds = (int)Math.Ceiling(retryAfter.TotalSeconds) });
 
         var post = await db.Posts.FirstOrDefaultAsync(p => p.PostId == postId, ct);
