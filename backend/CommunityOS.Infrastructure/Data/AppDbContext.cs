@@ -287,6 +287,96 @@ public sealed class AppDbContext : DbContext
         });
     }
 
+    // ---- Phase 1B entity configuration ----
+    private static void ConfigureConversation(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Conversation>(b =>
+        {
+            b.HasKey(x => x.ConversationId);
+
+            b.HasMany(x => x.Participants).WithOne(x => x.Conversation).HasForeignKey(x => x.ConversationId);
+            b.HasMany(x => x.Messages).WithOne(x => x.Conversation).HasForeignKey(x => x.ConversationId);
+
+            b.HasIndex(x => new { x.TenantId, x.CreatedAt });
+            b.HasIndex(x => new { x.TenantId, x.DirectUserAId, x.DirectUserBId });
+        });
+    }
+
+    private static void ConfigureConversationParticipant(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ConversationParticipant>(b =>
+        {
+            b.HasKey(x => x.ConversationParticipantId);
+
+            b.HasOne(x => x.Conversation).WithMany(x => x.Participants).HasForeignKey(x => x.ConversationId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+
+            b.HasIndex(x => new { x.TenantId, x.CreatedAt });
+            b.HasIndex(x => new { x.TenantId, x.ConversationId, x.UserId }).IsUnique();
+        });
+    }
+
+    private static void ConfigureMessage(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Message>(b =>
+        {
+            b.HasKey(x => x.MessageId);
+            b.Property(x => x.BodyText).HasMaxLength(5000).IsRequired();
+
+            b.HasOne(x => x.Conversation).WithMany(x => x.Messages).HasForeignKey(x => x.ConversationId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne(x => x.Sender).WithMany().HasForeignKey(x => x.SenderId).OnDelete(DeleteBehavior.Restrict);
+
+            b.HasIndex(x => new { x.TenantId, x.ConversationId, x.SentAt });
+            b.HasIndex(x => new { x.TenantId, x.CreatedAt });
+        });
+    }
+
+    private static void ConfigurePoll(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Poll>(b =>
+        {
+            b.HasKey(x => x.PollId);
+            b.Property(x => x.Question).HasMaxLength(500).IsRequired();
+
+            b.HasOne(x => x.Post).WithMany().HasForeignKey(x => x.PostId).OnDelete(DeleteBehavior.Cascade);
+            b.HasMany(x => x.Options).WithOne(x => x.Poll).HasForeignKey(x => x.PollId);
+
+            b.HasIndex(x => new { x.TenantId, x.CreatedAt });
+            b.HasIndex(x => new { x.TenantId, x.PostId }).IsUnique();
+        });
+    }
+
+    private static void ConfigurePollOption(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PollOption>(b =>
+        {
+            b.HasKey(x => x.PollOptionId);
+            b.Property(x => x.Text).HasMaxLength(200).IsRequired();
+
+            b.HasOne(x => x.Poll).WithMany(x => x.Options).HasForeignKey(x => x.PollId).OnDelete(DeleteBehavior.Cascade);
+            b.HasMany(x => x.Votes).WithOne(x => x.Option).HasForeignKey(x => x.PollOptionId);
+
+            b.HasIndex(x => new { x.TenantId, x.CreatedAt });
+            b.HasIndex(x => new { x.TenantId, x.PollId, x.SortOrder });
+        });
+    }
+
+    private static void ConfigurePollVote(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PollVote>(b =>
+        {
+            b.HasKey(x => x.PollVoteId);
+
+            b.HasOne(x => x.Poll).WithMany().HasForeignKey(x => x.PollId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne(x => x.Option).WithMany(x => x.Votes).HasForeignKey(x => x.PollOptionId).OnDelete(DeleteBehavior.Cascade);
+            b.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+
+            b.HasIndex(x => new { x.TenantId, x.CreatedAt });
+            b.HasIndex(x => new { x.TenantId, x.PollId, x.UserId }).IsUnique();
+        });
+    }
+
+
     private static void ConfigureReport(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Report>(b =>
