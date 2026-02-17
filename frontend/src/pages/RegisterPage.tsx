@@ -7,6 +7,8 @@ type AuthResponse = { token: string };
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const loc = useLocation() as { state?: { from?: string } };
+  const { refreshMe } = useAppSession();
   const [tenantCode, setTenantCode] = useState<'SE' | 'IT'>('SE');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
