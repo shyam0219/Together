@@ -101,12 +101,12 @@ public sealed class AppDbContext : DbContext
         {
             if (entry.State == EntityState.Added)
             {
-                if (!_tenantProvider.HasTenant)
+                if (!_tenantContext.HasTenant)
                 {
                     throw new InvalidOperationException("Tenant is not set; cannot create tenant-scoped entity.");
                 }
 
-                entry.Entity.TenantId = _tenantProvider.CurrentTenantId;
+                entry.Entity.TenantId = _tenantContext.CurrentTenantId;
                 entry.Entity.CreatedAt = now;
                 entry.Entity.UpdatedAt = now;
 
