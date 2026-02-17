@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CommunityOS.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a79d3b609fbbe823de02009f44d0f882c6f5ac6c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e468a27db745db6c4052c6d01c6766d4a7e11e8e")]
 [assembly: System.Reflection.AssemblyProductAttribute("CommunityOS.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CommunityOS.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
