@@ -57,7 +57,10 @@ public sealed class SearchController : ControllerBase
             return links.Any(l => l.Group.Visibility == GroupVisibility.Public || myGroupSet.Contains(l.GroupId));
         }
 
-        var raw = await query.Take(5000).ToListAsync(ct);
+        var raw = await query
+            .Include(p => p.Images)
+            .Take(5000)
+            .ToListAsync(ct);
         raw = raw.Where(IsVisible).OrderByDescending(p => p.CreatedAt).ToList();
 
         var skip = (page - 1) * pageSize;
