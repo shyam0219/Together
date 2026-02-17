@@ -14,10 +14,10 @@ public sealed class NotificationsController : ControllerBase
     [HttpGet]
     [Authorize]
     public async Task<ActionResult<PageResponse<NotificationDto>>> List(
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 20,
         [FromServices] AppDbContext db,
-        CancellationToken ct = default)
+        CancellationToken ct,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
         var me = UserContext.GetRequiredUserId(User);
 
