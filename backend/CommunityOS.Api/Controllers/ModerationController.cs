@@ -21,17 +21,28 @@ public sealed class ModerationController : ControllerBase
 
     [HttpGet("reports")]
     [Authorize]
-    public async Task<ActionResult<List<ReportDto>>> Reports([FromServices] AppDbContext db, CancellationToken ct)
+    public async Task<ActionResult<PageResponse<ReportDto>>> Reports(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50,
+        [FromServices] AppDbContext db,
+        CancellationToken ct = default)
     {
         var role = UserContext.GetRole(User);
         if (!IsModOrAdmin(role)) return Forbid();
 
-        var items = await db.Reports.AsNoTracking()
-            .Take(500)
-            .ToListAsync(ct);
-        items = items.OrderByDescending(r => r.CreatedAt).Take(200).ToList();
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize is < 1 ? 50 : pageSize;
+        pageSize = Math.Min(pageSize, 100);
 
-        return Ok(items.Select(r => new ReportDto(r.ReportId, r.ReporterId, r.TargetType.ToString(), r.TargetId, r.Reason, r.Notes, r.Status.ToString(), r.CreatedAt)).ToList());
+        var all = await db.Reports.AsNoTracking().Take(5000).ToListAsync(ct);
+        var ordered = all.OrderByDescending(r => r.CreatedAt).ToList();
+
+        var skip = (page - 1) * pageSize;
+        var items = ordered.Skip(skip).Take(pageSize).ToList();
+        var hasMore = ordered.Count > skip + pageSize;
+
+        var dtos = items.Select(r => new ReportDto(r.ReportId, r.ReporterId, r.TargetType.ToString(), r.TargetId, r.Reason, r.Notes, r.Status.ToString(), r.CreatedAt)).ToList();
+        return Ok(new PageResponse<ReportDto>(dtos, page, pageSize, hasMore));
     }
 
     [HttpPost("reports/{id:guid}/action")]
