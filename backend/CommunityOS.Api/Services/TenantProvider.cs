@@ -26,4 +26,10 @@ public sealed class TenantProvider : ITenantProvider
         _tenantId = tenantId;
         _isPlatformOwner = isPlatformOwner;
     }
+
+    public void Clear()
+    {
+        _tenantId = null;
+        _isPlatformOwner = false;
+    }
 }
