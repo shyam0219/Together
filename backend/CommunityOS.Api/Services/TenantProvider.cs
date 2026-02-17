@@ -7,6 +7,7 @@ public interface ITenantProvider
     bool IsPlatformOwner { get; }
 
     void Set(Guid tenantId, bool isPlatformOwner);
+    void Clear();
 }
 
 public sealed class TenantProvider : ITenantProvider
