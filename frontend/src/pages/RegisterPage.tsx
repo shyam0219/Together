@@ -28,7 +28,8 @@ export default function RegisterPage() {
       });
       localStorage.setItem('communityos_jwt', data.token);
       window.dispatchEvent(new Event('communityos:auth-changed'));
-      navigate('/');
+      await refreshMe();
+      navigate(loc.state?.from || '/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
