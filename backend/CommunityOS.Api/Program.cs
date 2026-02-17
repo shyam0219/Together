@@ -31,8 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
 });
 
-// JWT auth (configuration values will be added in Milestone 2)
-// For now, accept any validly signed token if present; middleware still enforces tenant claim presence.
+// JWT auth
 var jwtKey = builder.Configuration["Auth:JwtSigningKey"] ?? "dev-only-insecure-change-me";
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
