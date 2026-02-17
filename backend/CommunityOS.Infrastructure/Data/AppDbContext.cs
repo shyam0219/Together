@@ -1,6 +1,5 @@
 using CommunityOS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using CommunityOS.Api.Services;
 
 namespace CommunityOS.Infrastructure.Data;
 
