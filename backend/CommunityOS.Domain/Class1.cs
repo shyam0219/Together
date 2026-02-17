@@ -1,6 +1,4 @@
 ﻿namespace CommunityOS.Domain;
 
-public class Class1
-{
-
-}
+// Placeholder file from template. Domain types live under CommunityOS.Domain.Entities.
+internal static class DomainMarker {}
