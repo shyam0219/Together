@@ -16,19 +16,49 @@ public sealed class PostsController : ControllerBase
 
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<List<PostDto>>> List([
-        FromServices] AppDbContext db,
-        CancellationToken ct)
+    public async Task<ActionResult<PageResponse<PostDto>>> List(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromServices] AppDbContext db,
+        [FromServices] ITenantProvider tenantProvider,
+        CancellationToken ct = default)
     {
         var me = UserContext.GetRequiredUserId(User);
+        var tenantId = tenantProvider.CurrentTenantId;
 
-        var basePostsQuery = db.Posts
-            .AsNoTracking()
-            .Include(p => p.Images)
-            .Take(200);
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize is < 1 ? 20 : pageSize;
+        pageSize = Math.Min(pageSize, 50);
 
-        var posts = await basePostsQuery.ToListAsync(ct);
-        posts = posts.OrderByDescending(p => p.CreatedAt).Take(50).ToList();
+        // Group privacy enforcement: exclude posts tied to private groups unless member.
+        var myGroupIds = await db.GroupMembers.AsNoTracking()
+            .Where(m => m.UserId == me)
+            .Select(m => m.GroupId)
+            .ToListAsync(ct);
+        var myGroupSet = myGroupIds.ToHashSet();
+
+        var groupPosts = await db.GroupPosts.AsNoTracking()
+            .Include(gp => gp.Group)
+            .Take(2000)
+            .ToListAsync(ct);
+
+        bool IsVisible(Post p)
+        {
+            var links = groupPosts.Where(gp => gp.PostId == p.PostId).ToList();
+            if (links.Count == 0) return true; // public feed
+            // visible if any linked group is public or user is member.
+            return links.Any(l => l.Group.Visibility == GroupVisibility.Public || myGroupSet.Contains(l.GroupId));
+        }
+
+        var basePostsQuery = db.Posts.AsNoTracking().Include(p => p.Images).Take(1000);
+        var allPosts = await basePostsQuery.ToListAsync(ct);
+        var visiblePosts = allPosts.Where(IsVisible).OrderByDescending(p => p.CreatedAt).ToList();
+
+        var skip = (page - 1) * pageSize;
+        var pageItems = visiblePosts.Skip(skip).Take(pageSize).ToList();
+        var hasMore = visiblePosts.Count > skip + pageSize;
+
+        var posts = pageItems;
 
         var postIds = posts.Select(p => p.PostId).ToList();
 
