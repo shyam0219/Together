@@ -28,6 +28,7 @@ public sealed class AppDbContext : DbContext
     public DbSet<Bookmark> Bookmarks => Set<Bookmark>();
     public DbSet<Group> Groups => Set<Group>();
     public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
+    public DbSet<GroupPost> GroupPosts => Set<GroupPost>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
@@ -53,6 +54,7 @@ public sealed class AppDbContext : DbContext
         ConfigureBookmark(modelBuilder);
         ConfigureGroup(modelBuilder);
         ConfigureGroupMember(modelBuilder);
+        ConfigureGroupPost(modelBuilder);
         ConfigureReport(modelBuilder);
         ConfigureNotification(modelBuilder);
         ConfigureAuditLog(modelBuilder);
@@ -72,6 +74,7 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<Bookmark>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
         modelBuilder.Entity<Group>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
         modelBuilder.Entity<GroupMember>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<GroupPost>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
         modelBuilder.Entity<Report>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
         modelBuilder.Entity<Notification>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
         modelBuilder.Entity<AuditLog>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
