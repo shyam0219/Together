@@ -57,11 +57,15 @@ public sealed class CommentsController : ControllerBase
         if (usernames.Count > 0)
         {
             var candidates = await db.Users.AsNoTracking()
-                .Where(u => usernames.Contains(u.Email.Split('@')[0]))
-                .Select(u => u.UserId)
+                .Select(u => new { u.UserId, u.Email })
                 .ToListAsync(ct);
 
-            foreach (var uid in candidates.Distinct())
+            var mentioned = candidates
+                .Where(x => usernames.Contains(x.Email.Split('@')[0], StringComparer.OrdinalIgnoreCase))
+                .Select(x => x.UserId)
+                .ToList();
+
+            foreach (var uid in mentioned.Distinct())
             {
                 if (uid == me) continue;
                 await notifications.CreateMentionAsync(uid, me, "Comment", cmt.CommentId, ct);
