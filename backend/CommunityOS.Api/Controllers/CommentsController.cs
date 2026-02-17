@@ -11,6 +11,73 @@ namespace CommunityOS.Api.Controllers;
 [ApiController]
 public sealed class CommentsController : ControllerBase
 {
+    [HttpGet("api/v1/posts/{postId:guid}/comments")]
+    [Authorize]
+    public async Task<ActionResult<PageResponse<CommentDto>>> ListForPost(
+        [FromRoute] Guid postId,
+        [FromServices] AppDbContext db,
+        CancellationToken ct,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50)
+    {
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize is < 1 ? 50 : pageSize;
+        pageSize = Math.Min(pageSize, 200);
+
+        // Ensure post exists and caller can access it (group privacy is enforced in PostsController GET,
+        // but for comments listing we re-check visibility via group mapping).
+        var me = UserContext.GetRequiredUserId(User);
+        var post = await db.Posts.AsNoTracking().FirstOrDefaultAsync(p => p.PostId == postId, ct);
+        if (post is null) return NotFound(new { error = "post_not_found" });
+
+        var links = await db.GroupPosts.AsNoTracking()
+            .Include(gp => gp.Group)
+            .Where(gp => gp.PostId == postId)
+            .ToListAsync(ct);
+        if (links.Count > 0)
+        {
+            var myGroupIds = await db.GroupMembers.AsNoTracking()
+                .Where(m => m.UserId == me)
+                .Select(m => m.GroupId)
+                .ToListAsync(ct);
+            var myGroupSet = myGroupIds.ToHashSet();
+
+            var visible = links.Any(l => l.Group.Visibility == GroupVisibility.Public || myGroupSet.Contains(l.GroupId));
+            if (!visible) return NotFound(new { error = "post_not_found" });
+        }
+
+        // Load all comments for the post (SQLite DateTimeOffset ordering limitations -> in-memory sort).
+        var raw = await db.Comments.AsNoTracking()
+            .Where(c => c.PostId == postId)
+            .Take(10000)
+            .ToListAsync(ct);
+
+        raw = raw.OrderBy(c => c.CreatedAt).ToList();
+
+        var skip = (page - 1) * pageSize;
+        var pageItems = raw.Skip(skip).Take(pageSize).ToList();
+        var hasMore = raw.Count > skip + pageSize;
+
+        var authorIds = pageItems.Select(c => c.AuthorId).Distinct().ToList();
+        var authors = await db.Users.AsNoTracking()
+            .Where(u => authorIds.Contains(u.UserId))
+            .Select(u => new { u.UserId, Name = u.FirstName + " " + u.LastName })
+            .ToListAsync(ct);
+        var authorMap = authors.ToDictionary(a => a.UserId, a => a.Name);
+
+        var dtos = pageItems.Select(c => new CommentDto(
+            c.CommentId,
+            c.PostId,
+            c.AuthorId,
+            authorMap.TryGetValue(c.AuthorId, out var name) ? name : "Unknown",
+            c.ParentCommentId,
+            c.Text,
+            c.CreatedAt
+        )).ToList();
+
+        return Ok(new PageResponse<CommentDto>(dtos, page, pageSize, hasMore));
+    }
+
     private static readonly TimeSpan CommentRateWindow = TimeSpan.FromSeconds(10);
 
     [HttpPost("api/v1/posts/{postId:guid}/comments")]
