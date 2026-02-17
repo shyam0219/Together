@@ -33,6 +33,15 @@ public sealed class AppDbContext : DbContext
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
+    // Phase 1B
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<ConversationParticipant> ConversationParticipants => Set<ConversationParticipant>();
+    public DbSet<Message> Messages => Set<Message>();
+
+    public DbSet<Poll> Polls => Set<Poll>();
+    public DbSet<PollOption> PollOptions => Set<PollOption>();
+    public DbSet<PollVote> PollVotes => Set<PollVote>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -59,6 +68,14 @@ public sealed class AppDbContext : DbContext
         ConfigureNotification(modelBuilder);
         ConfigureAuditLog(modelBuilder);
 
+        // Phase 1B
+        ConfigureConversation(modelBuilder);
+        ConfigureConversationParticipant(modelBuilder);
+        ConfigureMessage(modelBuilder);
+        ConfigurePoll(modelBuilder);
+        ConfigurePollOption(modelBuilder);
+        ConfigurePollVote(modelBuilder);
+
         ApplyTenantQueryFilters(modelBuilder);
     }
 
@@ -78,6 +95,14 @@ public sealed class AppDbContext : DbContext
         modelBuilder.Entity<Report>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
         modelBuilder.Entity<Notification>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
         modelBuilder.Entity<AuditLog>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+
+        modelBuilder.Entity<Conversation>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<ConversationParticipant>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<Message>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+
+        modelBuilder.Entity<Poll>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<PollOption>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<PollVote>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
     }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
