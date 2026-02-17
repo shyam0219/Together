@@ -130,11 +130,15 @@ public sealed class PostsController : ControllerBase
         var usernames = MentionParser.ExtractMentions(post.BodyText);
         if (usernames.Count > 0)
         {
-            // Simplified mention resolution: match by email local-part OR first.last
+            // Simplified mention resolution: match by email local-part
             var candidates = await db.Users.AsNoTracking()
-                .Where(u => usernames.Contains(u.Email.Split('@')[0]))
-                .Select(u => u.UserId)
+                .Select(u => new { u.UserId, u.Email })
                 .ToListAsync(ct);
+
+            var mentioned = candidates
+                .Where(x => usernames.Contains(x.Email.Split('@')[0], StringComparer.OrdinalIgnoreCase))
+                .Select(x => x.UserId)
+                .ToList();
 
             foreach (var uid in candidates.Distinct())
             {
