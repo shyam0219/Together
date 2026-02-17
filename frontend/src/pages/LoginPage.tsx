@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAppSession } from '../lib/AppContext';
 import { apiFetch } from '../lib/api';
 
 type AuthResponse = { token: string };
