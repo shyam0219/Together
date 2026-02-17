@@ -47,8 +47,10 @@ export default function PostDetailPage() {
       const p = await apiFetch<PostDto>(`/v1/posts/${postId}`);
       setPost(p);
 
-      // Backend currently doesn't have list-comments endpoint; use sqlite? For now we just show create/edit/delete flows.
-      // To keep UI functional, we maintain local list after create.
+      const page1 = await apiFetch<{ items: CommentDto[]; page: number; pageSize: number; hasMore: boolean }>(
+        `/v1/posts/${postId}/comments?page=1&pageSize=200`
+      );
+      setComments(page1.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed');
     } finally {
