@@ -18,6 +18,7 @@ public sealed record PostDto(
     DateTimeOffset CreatedAt,
     IReadOnlyList<PostImageDto> Images,
     int LikeCount,
+    int CommentCount,
     bool LikedByMe,
     bool BookmarkedByMe
 );
