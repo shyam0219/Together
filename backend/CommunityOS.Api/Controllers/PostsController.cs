@@ -113,6 +113,7 @@ public sealed class PostsController : ControllerBase
             p.CreatedAt,
             p.Images.OrderBy(i => i.SortOrder).Select(PostDtoMapper.ToDto).ToList(),
             likeCountMap.TryGetValue(p.PostId, out var cnt) ? cnt : 0,
+            commentCountMap.TryGetValue(p.PostId, out var cc) ? cc : 0,
             myLikeSet.Contains(p.PostId),
             myBookmarkSet.Contains(p.PostId)
         )).ToList();
