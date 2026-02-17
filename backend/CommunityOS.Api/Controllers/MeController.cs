@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+
 using CommunityOS.Domain.Entities;
 using CommunityOS.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
