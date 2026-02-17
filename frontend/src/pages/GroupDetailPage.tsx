@@ -19,13 +19,7 @@ export default function GroupDetailPage() {
       const g = await apiFetch<GroupDto>(`/v1/groups/${groupId}`);
       setGroup(g);
 
-      // Load feed and filter by group by matching create-post group selection flow.
-      // Backend does not provide group-specific posts endpoint yet; we filter client-side
-      // by requesting /posts and letting backend enforce privacy.
-      const feed = await apiFetch<PageResponse<PostDto>>('/v1/posts?page=1&pageSize=50');
-      // Posts linked to this group are not tagged in DTO; workaround: user creates group posts via create post with groupId.
-      // For now, show only posts containing "[group:" marker? Not available.
-      // MVP: show recent feed as group timeline placeholder.
+      const feed = await apiFetch<PageResponse<PostDto>>(`/v1/groups/${groupId}/posts?page=1&pageSize=50`);
       setPosts(feed.items);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed');
