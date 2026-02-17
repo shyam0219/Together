@@ -24,6 +24,7 @@ export default function RegisterPage() {
         body: JSON.stringify({ email, password, firstName, lastName, tenantCode }),
       });
       localStorage.setItem('communityos_jwt', data.token);
+      window.dispatchEvent(new Event('communityos:auth-changed'));
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
