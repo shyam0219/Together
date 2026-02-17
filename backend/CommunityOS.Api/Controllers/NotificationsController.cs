@@ -13,17 +13,29 @@ public sealed class NotificationsController : ControllerBase
 {
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<List<NotificationDto>>> List([FromServices] AppDbContext db, CancellationToken ct)
+    public async Task<ActionResult<PageResponse<NotificationDto>>> List(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromServices] AppDbContext db,
+        CancellationToken ct = default)
     {
         var me = UserContext.GetRequiredUserId(User);
 
-        // SQLite fallback limitation: DateTimeOffset ordering translation.
-        // Order on server for SQL Server; for SQLite we order on client.
-        var baseQuery = db.Notifications.AsNoTracking().Where(n => n.UserId == me).Take(200);
-        var items = await baseQuery.ToListAsync(ct);
-        items = items.OrderByDescending(n => n.CreatedAt).Take(100).ToList();
+        page = page < 1 ? 1 : page;
+        pageSize = pageSize is < 1 ? 20 : pageSize;
+        pageSize = Math.Min(pageSize, 50);
 
-        return Ok(items.Select(n => new NotificationDto(n.NotificationId, n.Type.ToString(), n.PayloadJson, n.IsRead, n.CreatedAt)).ToList());
+        // SQLite fallback limitation: DateTimeOffset ordering translation.
+        var baseQuery = db.Notifications.AsNoTracking().Where(n => n.UserId == me).Take(2000);
+        var all = await baseQuery.ToListAsync(ct);
+        var ordered = all.OrderByDescending(n => n.CreatedAt).ToList();
+
+        var skip = (page - 1) * pageSize;
+        var items = ordered.Skip(skip).Take(pageSize).ToList();
+        var hasMore = ordered.Count > skip + pageSize;
+
+        var dtos = items.Select(n => new NotificationDto(n.NotificationId, n.Type.ToString(), n.PayloadJson, n.IsRead, n.CreatedAt)).ToList();
+        return Ok(new PageResponse<NotificationDto>(dtos, page, pageSize, hasMore));
     }
 
     [HttpPost("{id:guid}/read")]
