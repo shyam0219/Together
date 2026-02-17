@@ -27,9 +27,9 @@ public sealed class ModerationController : ControllerBase
         if (!IsModOrAdmin(role)) return Forbid();
 
         var items = await db.Reports.AsNoTracking()
-            .OrderByDescending(r => r.CreatedAt)
-            .Take(200)
+            .Take(500)
             .ToListAsync(ct);
+        items = items.OrderByDescending(r => r.CreatedAt).Take(200).ToList();
 
         return Ok(items.Select(r => new ReportDto(r.ReportId, r.ReporterId, r.TargetType.ToString(), r.TargetId, r.Reason, r.Notes, r.Status.ToString(), r.CreatedAt)).ToList());
     }

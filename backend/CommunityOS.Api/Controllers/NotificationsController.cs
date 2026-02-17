@@ -17,11 +17,11 @@ public sealed class NotificationsController : ControllerBase
     {
         var me = UserContext.GetRequiredUserId(User);
 
-        var items = await db.Notifications.AsNoTracking()
-            .Where(n => n.UserId == me)
-            .OrderByDescending(n => n.CreatedAt)
-            .Take(100)
-            .ToListAsync(ct);
+        // SQLite fallback limitation: DateTimeOffset ordering translation.
+        // Order on server for SQL Server; for SQLite we order on client.
+        var baseQuery = db.Notifications.AsNoTracking().Where(n => n.UserId == me).Take(200);
+        var items = await baseQuery.ToListAsync(ct);
+        items = items.OrderByDescending(n => n.CreatedAt).Take(100).ToList();
 
         return Ok(items.Select(n => new NotificationDto(n.NotificationId, n.Type.ToString(), n.PayloadJson, n.IsRead, n.CreatedAt)).ToList());
     }

@@ -22,12 +22,13 @@ public sealed class PostsController : ControllerBase
     {
         var me = UserContext.GetRequiredUserId(User);
 
-        var posts = await db.Posts
+        var basePostsQuery = db.Posts
             .AsNoTracking()
             .Include(p => p.Images)
-            .OrderByDescending(p => p.CreatedAt)
-            .Take(50)
-            .ToListAsync(ct);
+            .Take(200);
+
+        var posts = await basePostsQuery.ToListAsync(ct);
+        posts = posts.OrderByDescending(p => p.CreatedAt).Take(50).ToList();
 
         var postIds = posts.Select(p => p.PostId).ToList();
 
