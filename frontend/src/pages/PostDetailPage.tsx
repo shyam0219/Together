@@ -84,9 +84,7 @@ export default function PostDetailPage() {
     setError(null);
     try {
       await apiFetch<void>(`/v1/comments/${commentId}`, { method: 'DELETE' });
-      setComments((prev) => prev.filter((c) => c.commentId !== commentId));
-      const p = await apiFetch<PostDto>(`/v1/posts/${postId}`);
-      setPost(p);
+      await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed');
     }
