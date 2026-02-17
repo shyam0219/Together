@@ -80,9 +80,12 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 16, display: 'flex', gap: 12 }}>
         <Link data-testid="login-home-link" to="/">
           Back to Home
+        </Link>
+        <Link data-testid="login-register-link" to="/register">
+          Register
         </Link>
       </div>
     </div>
