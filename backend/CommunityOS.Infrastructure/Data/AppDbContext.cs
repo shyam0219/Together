@@ -64,8 +64,8 @@ public sealed class AppDbContext : DbContext
     {
         // Important: platform owner bypasses tenant filtering.
         // Uses captured scoped ITenantProvider. EF Core evaluates this per context instance.
-        Guid CurrentTenantId() => _tenantProvider.CurrentTenantId;
-        bool IsPlatformOwner() => _tenantProvider.IsPlatformOwner;
+        Guid CurrentTenantId() => _tenantContext.CurrentTenantId;
+        bool IsPlatformOwner() => _tenantContext.IsPlatformOwner;
 
         modelBuilder.Entity<User>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
         modelBuilder.Entity<Post>().HasQueryFilter(x => (IsPlatformOwner() || x.TenantId == CurrentTenantId()) && x.SoftDeletedAt == null);
