@@ -41,6 +41,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     void refreshMe();
+
+    const handler = () => {
+      void refreshMe();
+    };
+
+    window.addEventListener('communityos:auth-changed', handler);
+    window.addEventListener('storage', handler);
+
+    return () => {
+      window.removeEventListener('communityos:auth-changed', handler);
+      window.removeEventListener('storage', handler);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
