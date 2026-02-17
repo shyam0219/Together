@@ -140,7 +140,7 @@ public sealed class PostsController : ControllerBase
                 .Select(x => x.UserId)
                 .ToList();
 
-            foreach (var uid in candidates.Distinct())
+            foreach (var uid in mentioned.Distinct())
             {
                 if (uid == me) continue;
                 await notifications.CreateMentionAsync(uid, me, "Post", post.PostId, ct);
