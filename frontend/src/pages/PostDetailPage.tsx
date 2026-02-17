@@ -68,16 +68,13 @@ export default function PostDetailPage() {
     setError(null);
     try {
       const body: CreateCommentBody = { text: text.trim(), parentCommentId: replyTo };
-      const c = await apiFetch<CommentDto>(`/v1/posts/${postId}/comments`, {
+      await apiFetch<CommentDto>(`/v1/posts/${postId}/comments`, {
         method: 'POST',
         body: JSON.stringify(body),
       });
-      setComments((prev) => [...prev, c].sort((a, b) => a.createdAt.localeCompare(b.createdAt)));
       setText('');
       setReplyTo(null);
-      // refresh post to update commentCount
-      const p = await apiFetch<PostDto>(`/v1/posts/${postId}`);
-      setPost(p);
+      await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed');
     }
