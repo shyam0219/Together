@@ -127,6 +127,7 @@ public sealed class PostsController : ControllerBase
         [FromBody] CreatePostRequest req,
         [FromServices] AppDbContext db,
         [FromServices] IRateLimitService rateLimiter,
+        [FromServices] ITenantProvider tenantProvider,
         [FromServices] INotificationService notifications,
         CancellationToken ct)
     {
