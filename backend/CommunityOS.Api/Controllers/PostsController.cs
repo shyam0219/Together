@@ -241,6 +241,7 @@ public sealed class PostsController : ControllerBase
             p.CreatedAt,
             p.Images.OrderBy(i => i.SortOrder).Select(PostDtoMapper.ToDto).ToList(),
             likeCount,
+            commentCount,
             likedByMe,
             bookmarkedByMe
         ));
