@@ -32,6 +32,12 @@ export default function NavBar() {
       <Link data-testid="nav-notifications-link" to="/notifications">
         Notifications
       </Link>
+      <Link data-testid="nav-search-link" to="/search">
+        Search
+      </Link>
+      <Link data-testid="nav-messages-link" to="/messages">
+        Messages
+      </Link>
 
       {isModOrAdmin(me?.role) ? (
         <Link data-testid="nav-moderation-link" to="/moderation">
