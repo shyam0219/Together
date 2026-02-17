@@ -15,10 +15,10 @@ public sealed class RateLimitService : IRateLimitService
 {
     private readonly ConcurrentDictionary<string, DateTimeOffset> _lastActionAt = new();
 
-    public bool TryConsume(Guid userId, string actionKey, TimeSpan window, out TimeSpan retryAfter)
+    public bool TryConsume(Guid tenantId, Guid userId, string actionKey, TimeSpan window, out TimeSpan retryAfter)
     {
         var now = DateTimeOffset.UtcNow;
-        var key = $"{userId:N}:{actionKey}";
+        var key = $"{tenantId:N}:{userId:N}:{actionKey}";
 
         retryAfter = TimeSpan.Zero;
 
