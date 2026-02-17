@@ -15,6 +15,8 @@ builder.Services.AddScoped<ITenantProvider, TenantProvider>();
 builder.Services.AddScoped<ITenantContext, EfTenantContextAdapter>();
 
 // EF Core: SQL Server is primary; fallback to SQLite when SQL Server is unavailable.
+builder.Services.AddSingleton<IRateLimitService, RateLimitService>();
+
 var sqlServerConnStr = builder.Configuration.GetConnectionString("SqlServer") ?? string.Empty;
 var sqliteConnStr = builder.Configuration.GetSection("Fallback")["SqliteFile"] ?? "Data Source=/app/backend/communityos-dev.sqlite";
 
