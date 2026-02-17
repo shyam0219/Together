@@ -3,13 +3,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityOS.Infrastructure.Data;
 
+public interface ITenantContext
+{
+    Guid CurrentTenantId { get; }
+    bool HasTenant { get; }
+    bool IsPlatformOwner { get; }
+}
+
 public sealed class AppDbContext : DbContext
 {
-    private readonly ITenantProvider _tenantProvider;
+    private readonly ITenantContext _tenantContext;
 
-    public AppDbContext(DbContextOptions<AppDbContext> options, ITenantProvider tenantProvider) : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options, ITenantContext tenantContext) : base(options)
     {
-        _tenantProvider = tenantProvider;
+        _tenantContext = tenantContext;
     }
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
