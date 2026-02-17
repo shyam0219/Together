@@ -19,7 +19,7 @@ export default function RegisterPage() {
     setError(null);
     setLoading(true);
     try {
-      const data = await apiFetch<AuthResponse>('/api/v1/auth/register', {
+      const data = await apiFetch<AuthResponse>('/v1/auth/register', {
         method: 'POST',
         body: JSON.stringify({ email, password, firstName, lastName, tenantCode }),
       });

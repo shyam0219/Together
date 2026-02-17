@@ -17,7 +17,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      const data = await apiFetch<AuthResponse>('/api/v1/auth/login', {
+      const data = await apiFetch<AuthResponse>('/v1/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password, tenantCode }),
       });
