@@ -244,6 +244,9 @@ public sealed class AppDbContext : DbContext
             b.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
 
             b.HasIndex(x => new { x.TenantId, x.CreatedAt });
+            b.HasIndex(x => new { x.TenantId, x.GroupId, x.UserId }).IsUnique();
+        });
+    }
 
     private static void ConfigureGroupPost(ModelBuilder modelBuilder)
     {
@@ -256,10 +259,6 @@ public sealed class AppDbContext : DbContext
 
             b.HasIndex(x => new { x.TenantId, x.CreatedAt });
             b.HasIndex(x => new { x.TenantId, x.GroupId, x.PostId }).IsUnique();
-        });
-    }
-
-            b.HasIndex(x => new { x.TenantId, x.GroupId, x.UserId }).IsUnique();
         });
     }
 
