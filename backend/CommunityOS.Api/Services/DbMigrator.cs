@@ -38,7 +38,7 @@ public static class DbMigrator
         }
 
         // Seed users (PlatformOwner + per-tenant Admin + 2 Members per tenant)
-        if (!await db.Users.IgnoreQueryFilters().AnyAsync(ct))
+        if (!await db.Users.AnyAsync(ct))
         {
             logger.LogInformation("Seeding users...");
             var hasher = services.GetRequiredService<IPasswordHasher>();
