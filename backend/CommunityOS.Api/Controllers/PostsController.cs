@@ -204,6 +204,23 @@ public sealed class PostsController : ControllerBase
 
         if (p is null) return NotFound(new { error = "not_found" });
 
+        // Group privacy enforcement
+        var links = await db.GroupPosts.AsNoTracking()
+            .Include(gp => gp.Group)
+            .Where(gp => gp.PostId == p.PostId)
+            .ToListAsync(ct);
+        if (links.Count > 0)
+        {
+            var myGroupIds = await db.GroupMembers.AsNoTracking()
+                .Where(m => m.UserId == me)
+                .Select(m => m.GroupId)
+                .ToListAsync(ct);
+            var myGroupSet = myGroupIds.ToHashSet();
+
+            var visible = links.Any(l => l.Group.Visibility == GroupVisibility.Public || myGroupSet.Contains(l.GroupId));
+            if (!visible) return NotFound(new { error = "not_found" });
+        }
+
         var author = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == p.AuthorId, ct);
         var likeCount = await db.Reactions.AsNoTracking().CountAsync(r => r.PostId == p.PostId && r.Type == ReactionType.Like, ct);
         var likedByMe = await db.Reactions.AsNoTracking().AnyAsync(r => r.PostId == p.PostId && r.UserId == me && r.Type == ReactionType.Like, ct);
