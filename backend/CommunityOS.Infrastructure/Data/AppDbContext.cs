@@ -115,7 +115,7 @@ public sealed class AppDbContext : DbContext
             else if (entry.State == EntityState.Modified)
             {
                 // Prevent cross-tenant updates
-                if (!_tenantProvider.IsPlatformOwner && entry.Entity.TenantId != _tenantProvider.CurrentTenantId)
+                if (!_tenantContext.IsPlatformOwner && entry.Entity.TenantId != _tenantContext.CurrentTenantId)
                 {
                     throw new InvalidOperationException("Cross-tenant update is not allowed.");
                 }
