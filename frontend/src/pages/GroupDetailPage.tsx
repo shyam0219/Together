@@ -11,7 +11,7 @@ export default function GroupDetailPage() {
   const [posts, setPosts] = useState<PostDto[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const groupPosts = useMemo(() => posts.filter((p) => true), [posts]);
+  const groupPosts = useMemo(() => posts, [posts]);
 
   async function load() {
     setError(null);
