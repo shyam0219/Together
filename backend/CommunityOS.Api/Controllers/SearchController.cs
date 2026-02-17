@@ -29,7 +29,7 @@ public sealed class SearchController : ControllerBase
         pageSize = Math.Min(pageSize, 50);
 
         var me = UserContext.GetRequiredUserId(User);
-        var query = db.Posts.AsNoTracking().Include(p => p.Images);
+        IQueryable<Post> query = db.Posts.AsNoTracking();
 
         var s = q.Trim();
         query = query.Where(p =>
