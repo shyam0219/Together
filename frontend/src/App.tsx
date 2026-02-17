@@ -13,6 +13,8 @@ import MembersPage from './pages/MembersPage';
 import MemberDetailPage from './pages/MemberDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
 import ModerationPage from './pages/ModerationPage';
+import SearchPage from './pages/SearchPage';
+import MessagesPage from './pages/MessagesPage';
 
 export default function App() {
   return (
@@ -79,6 +81,22 @@ export default function App() {
           element={
             <RequireAuth>
               <NotificationsPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <RequireAuth>
+              <SearchPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/messages"
+          element={
+            <RequireAuth>
+              <MessagesPage />
             </RequireAuth>
           }
         />
