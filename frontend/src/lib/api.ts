@@ -1,9 +1,5 @@
-export const API_BASE_URL = import.meta.env.VITE_BACKEND_URL as string | undefined;
-
-if (!API_BASE_URL) {
-  // eslint-disable-next-line no-console
-  console.warn('VITE_BACKEND_URL is not set; API calls will fail.');
-}
+// Use relative base URL so Preview gateway routing works (Vite proxies /api -> backend).
+const API_BASE_URL = '/api';
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `${API_BASE_URL}${path}`;
