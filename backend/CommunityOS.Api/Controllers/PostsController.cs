@@ -95,6 +95,7 @@ public sealed class PostsController : ControllerBase
         var authorMap = authors.ToDictionary(a => a.UserId, a => a.Name);
 
         var likeCountMap = likeCounts.ToDictionary(x => x.PostId, x => x.Count);
+        var commentCountMap = commentCounts.ToDictionary(x => x.PostId, x => x.Count);
         var myLikeSet = myLikes.ToHashSet();
         var myBookmarkSet = myBookmarks.ToHashSet();
 
