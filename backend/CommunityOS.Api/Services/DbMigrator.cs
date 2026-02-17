@@ -38,91 +38,142 @@ public static class DbMigrator
         }
 
         // Seed users (PlatformOwner + per-tenant Admin + 2 Members per tenant)
-        if (!await db.Users.AnyAsync(ct))
+        logger.LogInformation("Ensuring seed users...");
+        var hasher = services.GetRequiredService<IPasswordHasher>();
+        var defaultPasswordHash = hasher.Hash("Password123!");
+
+        async Task EnsureUserAsync(Guid userId, string email, Guid expectedTenantId, string firstName, string lastName, CommunityOS.Domain.Entities.UserRole role)
         {
-            logger.LogInformation("Seeding users...");
-            var hasher = services.GetRequiredService<IPasswordHasher>();
-
-            // PlatformOwner (special: still has a TenantId, set to SE for simplicity; role bypasses filters anyway)
+            // PlatformOwner context to bypass filters and allow tenant correction.
             tenantProvider.Set(seTenantId, isPlatformOwner: true);
-            db.Users.Add(new CommunityOS.Domain.Entities.User
-            {
-                UserId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-                Email = "owner@platform.local",
-                PasswordHash = hasher.Hash("Password123!"),
-                FirstName = "Platform",
-                LastName = "Owner",
-                Role = CommunityOS.Domain.Entities.UserRole.PlatformOwner,
-                Status = CommunityOS.Domain.Entities.UserStatus.Active,
-            });
 
-            // Sweden Admin + Members
-            tenantProvider.Set(seTenantId, isPlatformOwner: false);
-            db.Users.Add(new CommunityOS.Domain.Entities.User
-            {
-                UserId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-                Email = "admin.se@community.local",
-                PasswordHash = hasher.Hash("Password123!"),
-                FirstName = "Sweden",
-                LastName = "Admin",
-                Role = CommunityOS.Domain.Entities.UserRole.Admin,
-                Status = CommunityOS.Domain.Entities.UserStatus.Active,
-            });
-            db.Users.Add(new CommunityOS.Domain.Entities.User
-            {
-                UserId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01"),
-                Email = "member1.se@community.local",
-                PasswordHash = hasher.Hash("Password123!"),
-                FirstName = "Sweden",
-                LastName = "Member1",
-                Role = CommunityOS.Domain.Entities.UserRole.Member,
-                Status = CommunityOS.Domain.Entities.UserStatus.Active,
-            });
-            db.Users.Add(new CommunityOS.Domain.Entities.User
-            {
-                UserId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb02"),
-                Email = "member2.se@community.local",
-                PasswordHash = hasher.Hash("Password123!"),
-                FirstName = "Sweden",
-                LastName = "Member2",
-                Role = CommunityOS.Domain.Entities.UserRole.Member,
-                Status = CommunityOS.Domain.Entities.UserStatus.Active,
-            });
+            var emailNorm = email.Trim().ToLowerInvariant();
+            var existing = await db.Users.FirstOrDefaultAsync(u => u.Email == emailNorm, ct);
 
-            // Italy Admin + Members
-            tenantProvider.Set(itTenantId, isPlatformOwner: false);
-            db.Users.Add(new CommunityOS.Domain.Entities.User
+            if (existing is null)
             {
-                UserId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-                Email = "admin.it@community.local",
-                PasswordHash = hasher.Hash("Password123!"),
-                FirstName = "Italy",
-                LastName = "Admin",
-                Role = CommunityOS.Domain.Entities.UserRole.Admin,
-                Status = CommunityOS.Domain.Entities.UserStatus.Active,
-            });
-            db.Users.Add(new CommunityOS.Domain.Entities.User
-            {
-                UserId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccc01"),
-                Email = "member1.it@community.local",
-                PasswordHash = hasher.Hash("Password123!"),
-                FirstName = "Italy",
-                LastName = "Member1",
-                Role = CommunityOS.Domain.Entities.UserRole.Member,
-                Status = CommunityOS.Domain.Entities.UserStatus.Active,
-            });
-            db.Users.Add(new CommunityOS.Domain.Entities.User
-            {
-                UserId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccc02"),
-                Email = "member2.it@community.local",
-                PasswordHash = hasher.Hash("Password123!"),
-                FirstName = "Italy",
-                LastName = "Member2",
-                Role = CommunityOS.Domain.Entities.UserRole.Member,
-                Status = CommunityOS.Domain.Entities.UserStatus.Active,
-            });
+                // Switch to expected tenant for creation (auto TenantId on SaveChanges)
+                tenantProvider.Set(expectedTenantId, isPlatformOwner: role == CommunityOS.Domain.Entities.UserRole.PlatformOwner);
 
-            await db.SaveChangesAsync(ct);
+                db.Users.Add(new CommunityOS.Domain.Entities.User
+                {
+                    UserId = userId,
+                    Email = emailNorm,
+                    PasswordHash = defaultPasswordHash,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Role = role,
+                    Status = CommunityOS.Domain.Entities.UserStatus.Active,
+                });
+
+                await db.SaveChangesAsync(ct);
+                return;
+            }
+
+            // Update/correct
+            tenantProvider.Set(seTenantId, isPlatformOwner: true);
+
+            var changed = false;
+            if (existing.UserId != userId)
+            {
+                // Keep DB id stable if it already exists; do not change PK.
+            }
+            if (existing.TenantId != expectedTenantId)
+            {
+                existing.TenantId = expectedTenantId;
+                changed = true;
+            }
+            if (existing.Role != role)
+            {
+                existing.Role = role;
+                changed = true;
+            }
+            if (existing.Status != CommunityOS.Domain.Entities.UserStatus.Active)
+            {
+                existing.Status = CommunityOS.Domain.Entities.UserStatus.Active;
+                changed = true;
+            }
+            if (existing.FirstName != firstName)
+            {
+                existing.FirstName = firstName;
+                changed = true;
+            }
+            if (existing.LastName != lastName)
+            {
+                existing.LastName = lastName;
+                changed = true;
+            }
+            if (existing.PasswordHash != defaultPasswordHash)
+            {
+                existing.PasswordHash = defaultPasswordHash;
+                changed = true;
+            }
+
+            if (changed)
+            {
+                await db.SaveChangesAsync(ct);
+            }
         }
+
+        await EnsureUserAsync(
+            Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+            "owner@platform.local",
+            seTenantId,
+            "Platform",
+            "Owner",
+            CommunityOS.Domain.Entities.UserRole.PlatformOwner
+        );
+
+        // Sweden
+        await EnsureUserAsync(
+            Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+            "admin.se@community.local",
+            seTenantId,
+            "Sweden",
+            "Admin",
+            CommunityOS.Domain.Entities.UserRole.Admin
+        );
+        await EnsureUserAsync(
+            Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb01"),
+            "member1.se@community.local",
+            seTenantId,
+            "Sweden",
+            "Member1",
+            CommunityOS.Domain.Entities.UserRole.Member
+        );
+        await EnsureUserAsync(
+            Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb02"),
+            "member2.se@community.local",
+            seTenantId,
+            "Sweden",
+            "Member2",
+            CommunityOS.Domain.Entities.UserRole.Member
+        );
+
+        // Italy
+        await EnsureUserAsync(
+            Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+            "admin.it@community.local",
+            itTenantId,
+            "Italy",
+            "Admin",
+            CommunityOS.Domain.Entities.UserRole.Admin
+        );
+        await EnsureUserAsync(
+            Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccc01"),
+            "member1.it@community.local",
+            itTenantId,
+            "Italy",
+            "Member1",
+            CommunityOS.Domain.Entities.UserRole.Member
+        );
+        await EnsureUserAsync(
+            Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccc02"),
+            "member2.it@community.local",
+            itTenantId,
+            "Italy",
+            "Member2",
+            CommunityOS.Domain.Entities.UserRole.Member
+        );
     }
 }
