@@ -18,14 +18,13 @@ builder.Services.AddScoped<ITenantContext, EfTenantContextAdapter>();
 var sqlServerConnStr = builder.Configuration.GetConnectionString("SqlServer") ?? string.Empty;
 var sqliteConnStr = builder.Configuration.GetSection("Fallback")["SqliteFile"] ?? "Data Source=/app/backend/communityos-dev.sqlite";
 
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (!string.IsNullOrWhiteSpace(sqlServerConnStr) && DbProviderSelector.CanConnectToSqlServer(sqlServerConnStr))
     {
-
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
-
         options.UseSqlServer(sqlServerConnStr);
     }
     else
