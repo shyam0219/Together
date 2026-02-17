@@ -63,21 +63,18 @@ public sealed class AppDbContext : DbContext
     private void ApplyTenantQueryFilters(ModelBuilder modelBuilder)
     {
         // Important: platform owner bypasses tenant filtering.
-        // Uses captured scoped ITenantProvider. EF Core evaluates this per context instance.
-        Guid CurrentTenantId() => _tenantContext.CurrentTenantId;
-        bool IsPlatformOwner() => _tenantContext.IsPlatformOwner;
-
-        modelBuilder.Entity<User>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
-        modelBuilder.Entity<Post>().HasQueryFilter(x => (IsPlatformOwner() || x.TenantId == CurrentTenantId()) && x.SoftDeletedAt == null);
-        modelBuilder.Entity<PostImage>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
-        modelBuilder.Entity<Comment>().HasQueryFilter(x => (IsPlatformOwner() || x.TenantId == CurrentTenantId()) && x.SoftDeletedAt == null);
-        modelBuilder.Entity<Reaction>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
-        modelBuilder.Entity<Bookmark>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
-        modelBuilder.Entity<Group>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
-        modelBuilder.Entity<GroupMember>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
-        modelBuilder.Entity<Report>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
-        modelBuilder.Entity<Notification>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
-        modelBuilder.Entity<AuditLog>().HasQueryFilter(x => IsPlatformOwner() || x.TenantId == CurrentTenantId());
+        // Use DbContext instance members directly (no local functions in expression trees).
+        modelBuilder.Entity<User>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<Post>().HasQueryFilter(x => (_tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId) && x.SoftDeletedAt == null);
+        modelBuilder.Entity<PostImage>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<Comment>().HasQueryFilter(x => (_tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId) && x.SoftDeletedAt == null);
+        modelBuilder.Entity<Reaction>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<Bookmark>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<Group>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<GroupMember>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<Report>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<Notification>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
+        modelBuilder.Entity<AuditLog>().HasQueryFilter(x => _tenantContext.IsPlatformOwner || x.TenantId == _tenantContext.CurrentTenantId);
     }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
